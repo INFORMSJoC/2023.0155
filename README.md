@@ -20,7 +20,7 @@ https://doi.org/10.1287/ijoc.2023.0155.cd
 Below is the BibTex for citing this snapshot of the respoitory.
 
 ```
-@misc{CacheTest,
+@misc{Clarkson2024,
   author =        {Jake Clarkson and Kyle Y. Lin},
   publisher =     {INFORMS Journal on Computing},
   title =         {Computing Optimal Strategies for a Search Game in Discrete Locations: Code for Numerical Experiments},
