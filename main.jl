@@ -19,7 +19,7 @@ using Distributions
 using Combinatorics
 using Printf
 using JuMP
-using GLPK 
+using GLPK
 using Random
 using LinearAlgebra
 using CSV
@@ -54,6 +54,7 @@ include("scripts/reproduce_experiment_from_stored_data.jl") #version to replicat
 include("scripts/run_new_experiment_by_drawing_data.jl") #version drawing new data using equation (23) from the paper (called in code section 3 below)
 
 
+
 #####################################################################################################################################################
 ################## 2. replicate the results from the paper
 ###output is saved in results/results_from_paper. The code automatically creates new folders.
@@ -84,13 +85,14 @@ max_iters = 1000
 #the proposition 4 test solves the search game G_D, and compares its value v to the expected search time e if the hider plays p0 and the searcher optimally counters.
 #if v=e then p0 is optimal for the hider. Here, due to numerical error when solving a matrix game, we accept equality if (v-e)/v < δp0, where δp0 is a user input
 #the value below (10^-9) is discussed in the paper - see Section 4.2
+#note that the Proposition 4 test is only run if n<=6, since it involves the computation of n! search sequences, which becomes computationally infeasible for n>6.
 δp0 = 0.000000001 #is the proposition test.
 
 #quan_vec determines the quantiles to be used when calculating the summary statistics in Tables 2 and 3 (see Section 4.2 in the paper)
 quan_vec = [0.95]
 
 #search game parameters chosen at the start of Section 4 in the paper
-box_sizes = [2 ,3, 5, 8] #number of boxes in a search game
+box_sizes = [2, 3, 5, 8] #number of boxes in a search game
 #NOTE: running n=8 for N=8000 problems can take a couple of hours
 #box_sizes = [2, 3, 5] #number of boxes in a search game - if want quicker runtime
 sample_schemes = ["Varied", "Low", "Medium", "High"] #names of different sampling schemes.
@@ -113,26 +115,29 @@ for n in box_sizes
             for ϵ in ϵ_values
                 @printf "Running for ϵ =%f for sample scheme %s.\n" ϵ sample_schemes[j]
                 reproduce_experiment_from_stored_data(n, N, detection_probs[j][1], detection_probs[j][2] , up_t, accuracy ,δ ,ϵ , δp0, bound_factor, quan_vec, max_iters) 
+                @printf "\n"
             end
         else
             reproduce_experiment_from_stored_data(n ,N, detection_probs[j][1], detection_probs[j][2], up_t, accuracy, δ, ϵ_values[1], δp0, bound_factor, quan_vec, max_iters) 
         end
+        @printf "\n"
     end
+    @printf "\n"
 end
 
 
 #####################################################################################################################################################
 ############################ 3. run a new experiment
-###output is saved in results/new_experiments. The code automatically creates new folders. 
+###output is saved in results/new_experiments. The code automatically creates new folders.
 #See README.md for explanation of output names, and run_new_experiment_by_drawing_data.jl for explanation of output content.
 
 ##the parameters used to generate search games in (23)
 low_q = 0.2; up_q = 0.8 #upper and lower detection probabilities labelled α_l and α_u in the paper 
 up_t = 5. #upper search times, fixed as 5 in the paper.
 
-n = 3; N = 1500 #number of boxes and number of search games to generate. NOTE: n>6 can start to take a few hours to run n*1000 problems. 
+n = 3; N = 1000 #number of boxes and number of search games to generate. NOTE: n>6 can start to take a few hours to run n*1000 problems. 
 
-experiment_name = "my test" #will appear at the end of all output from the experiment
+experiment_name = "my_test" #will appear at the end of all output from the experiment
 
 #for explanation of other parameters, see section "to replicate the results from the paper" above
 quan_vec = [0.5,0.75,0.95,0.99] 

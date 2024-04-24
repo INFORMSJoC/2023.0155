@@ -11,9 +11,13 @@
 
 #also outputs (for all N games) p0, the optimal p found, and the difference between them. This output was used for the analysis in Section 4.3
 
+#note that the Proposition 4 test is only run if n<=6, since it involves the computation of n! search sequences, which becomes computationally infeasible for n>6.
 
 function reproduce_experiment_from_stored_data(n::Int64,N::Int64, lowq::Float64, upq::Float64, upt::Float64, accuracy::Int64, δ::Float64, ϵ::Float64, δp0::Float64, bound_factor::Float64, quan_vec::Array{Float64,1}, max_iters::Int64)
 
+    if n>6
+      @printf "Since n=%d, the optimality test in Proposition 4 will not be run, as it requires the computation of %d!=%d search sequences.\n" n n factorial(n)  
+    end
 
      ##setup storage for raw data
      raw_output = zeros(N, 5) #used to record, for each problem: whether p0 optimal, sub opt of p0, the number of sseqs (and iterations) and the runtime
@@ -50,8 +54,12 @@ function reproduce_experiment_from_stored_data(n::Int64,N::Int64, lowq::Float64,
          qq= sprobs[i,1:n]
          cc= sprobs[i,n+1:2n]
 
-         #run Proposition 4 and store binary result
-         raw_output[i,1] = run_proposition4(qq, cc, n, accuracy, δp0)
+         #if n<=6, run Proposition 4 and store binary result
+         if n>6
+            raw_output[i,1] = NaN
+         else
+            raw_output[i,1] = run_proposition4(qq, cc, n, accuracy, δp0)  
+         end
 
          #setup for algorithm 10
          bounds=bound_factor.*calc_lower_bound(qq,cc,n) #calculate lower bound for algorithm 10

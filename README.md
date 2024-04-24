@@ -50,7 +50,9 @@ The data read in by main.jl if the user wishes to replicate the results of Secti
 
 The results produced by main.jl are in the results subfolder.
 
-The results folder contains two subfolders. In "results_from_paper", any results aiming to replicate the results from Section 4 of the paper are saved. In "new_experiments", any new experiments specified by the user are saved. Within these two subfolders, further subfolders split the results by the number of boxes per search game (n). When you run an experiment with n boxes, the subfolder "Box_n" will automatically be created by the code if it does not already exist. 
+The results folder contains two subfolders. In "results_from_paper", any results aiming to replicate the results from Section 4 of the paper are saved. In "new_experiments", any new experiments specified by the user are saved. Both subfolders are currently populated as if main.jl had been run in its entirety.
+
+Within the two subfolders, further subfolders split the results by the number of boxes per search game (n). When you run an experiment with n boxes, the subfolder "Box_n" will automatically be created by the code if it does not already exist. 
 
 The naming system for the output is the following: filedescription_n_N_alphal_alphau_tu_acc_expname.csv, where n is the number of boxes, N is the number of search games (each containing n boxes), (alphal, alphau) is the interval used to draw the detection probabilities in equation (23), tu is the upper limit in the interval used to draw the search times in equation (23), 10^(-acc) is the value of epsilon chosen in Step 1 of Algorithm 10, and expname is the experiment name.
 

@@ -7,18 +7,14 @@
 # returns a hider optimal strategy, a searcher optimal strategy and the value
 
 function solveLP(B::Array{Float64,2}, n::Int64)
-    s = size(B,1) #number of searcher strategies
-    game2 = Model(GLPK.Optimizer)
-    @variable(game2, 0. <= x[1:n])
-    @objective(game2, Min, sum(x[i] for i=1:n))
-    @constraint(game2, con, 1 .<= B * x)
-    @constraint(game2,con2, 0 .<= x)
-
-    optimize!(game2)
-    v = 1/objective_value(game2)
-    hider_opt = value.(x).*v
-    has_duals(game2)
-    searcher_opt = [-dual(con[i])*v for i=1:s]
-    return(hider_opt, searcher_opt, v)
+    model = Model(GLPK.Optimizer)
+    @variable(model, x[1:n] >= 0.)
+    @objective(model, Min, sum(x))
+    @constraint(model, con, B * x .>= 1)
+    optimize!(model)
+    @assert is_solved_and_feasible(model; dual = true)
+    v = 1 / objective_value(model)
+    hider_opt = value.(x) .* v
+    searcher_opt = -dual.(con) .* v
+    return hider_opt, searcher_opt, v
 end
-
